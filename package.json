@@ -52,8 +52,8 @@
     "whatwg-fetch": "2.0.2"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "start": "GRAPHQL_ENDPOINT=https://api.graph.cool/relay/v1/cj1ptfnk157mb01367lmfvnxw node scripts/start.js",
+    "build": "GRAPHQL_ENDPOINT=https://api.graph.cool/relay/v1/cj1ptfnk157mb01367lmfvnxw node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
