@@ -1,17 +1,45 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
-//import Routes from './routes'
-import Template from './containers/Template'
-import Home from './containers/Home'
-import Profile from './containers/Profile'
+import { Router, browserHistory, applyRouterMiddleware} from 'react-router'
+import Routes from './routes'
+import Relay from 'react-relay'
+import useRelay from 'react-router-relay'
+import {RelayNetworkLayer, urlMiddleware} from 'react-relay-network-layer'
+import {relayApi} from './config/endpoints'
+import auth from './utils/auth'
+
+const createHeaders = () => {
+  let idToken = auth.getToken()
+  if (idToken) {
+    return {
+      'Authorization': `Bearer ${idToken}`
+    }
+  } else{
+    return {}
+  }
+}
+
+Relay.injectNetworkLayer(
+  new RelayNetworkLayer([
+    urlMiddleware({
+      url: (req) => relayApi,
+    }),
+    next => req => {
+      req.headers = {
+        ...req.headers,
+        ...createHeaders()
+      }
+      return next(req)
+    } ,
+  ],{disableBatchQuery:true})
+)
 
 ReactDOM.render(
-  <Router>
-      <Template>
-          <Route exact path="/" component={Home} />
-          <Route path="/profile" component={Profile} />
-      </Template>
-  </Router>,
+  <Router
+    environment={Relay.Store}
+    render={applyRouterMiddleware(useRelay)}
+    history={browserHistory}
+    routes={Routes}
+    />,
   document.getElementById('root')
 )
